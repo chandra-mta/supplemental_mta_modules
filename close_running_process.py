@@ -1,9 +1,9 @@
-#!/proj/sot/ska3/flight/bin/python
-
+"""
+:Note: As of Feb 18 2026, this module is not used in live running.
+    This is still an available module. Check GitHub for usage.
+"""
 import os
 import sys
-import re
-import string
 import random
 import time
 
@@ -36,7 +36,7 @@ def close_running_process(process, usr='mta'):
 #--- if the process is running, kill it
 #
     for ent in data:
-        atemp = re.split('\s+', ent)
+        atemp = ent.split()
         pid   = atemp[1]
         cmd   = 'kill -9 ' + pid
         os.system(cmd)
