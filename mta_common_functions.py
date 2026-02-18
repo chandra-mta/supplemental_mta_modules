@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta4/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #############################################################################
 #                                                                           #
@@ -6,7 +6,7 @@
 #                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                       #
 #                                                                           #
-#           last update: Mar 16, 2021                                       #
+#           last update: Oct 21, 2021                                       #
 #                                                                           #
 #############################################################################
 
@@ -33,7 +33,7 @@ ascdsenv = getenv('source /home/ascds/.ascrc -r release; source /home/mta/bin/re
 tail = int(time.time() * random.random())
 zspace = '/tmp/zspace' + str(tail)
 
-house_keeping = '/data/mta4/Script/Python3.8/MTA/'
+house_keeping = '/data/mta/Script/Python3.10/MTA/'
 
 #--------------------------------------------------------------------------
 #-- read_data_file: read a data file and create a data list              --
@@ -656,15 +656,65 @@ def run_arc5gl_process(cline):
         fo.write(cline)
     
     try:
-        cmd = ' /proj/sot/ska/bin/arc5gl -user isobe -script ' + zspace + ' > ./zout'
+        cmd = ' /proj/sot/ska/bin/arc5gl -user swolk -script ' + zspace + ' > ./zout'
         os.system(cmd)
     except:
         try:
-            cmd  = ' /proj/axaf/simul/bin/arc5gl -user isobe -script ' + zspace + ' > ./zout'
+            cmd  = ' /proj/axaf/simul/bin/arc5gl -user swolk -script ' + zspace + ' > ./zout'
             os.system(cmd)
         except:
             cmd1 = "/usr/bin/env PERL5LIB= "
-            cmd2 = ' /proj/axaf/simul/bin/arc5gl -user isobe -script ' + zspace + ' > ./zout'
+            cmd2 = ' /proj/axaf/simul/bin/arc5gl -user swolk -script ' + zspace + ' > ./zout'
+            cmd  = cmd1 + cmd2
+            bash(cmd,  env=ascdsenv)
+    
+    rm_files(zspace)
+    
+    out  = read_data_file('./zout', remove=1)
+    save = []
+    for ent in out:
+        if ent == "":
+            continue
+        mc = re.search('Filename', ent)
+        if mc is not None:
+            continue
+        mc = re.search('Retrieved', ent)
+        if mc is not None:
+            continue
+        mc = re.search('---------------', ent)
+        if mc is not None:
+            continue
+    
+        atemp = re.split('\s+', ent)
+        save.append(atemp[0])
+    
+    return save
+
+#--------------------------------------------------------------------------
+#-- run_arc5gl_process_user: un arc5gl process with a user option        --
+#--------------------------------------------------------------------------
+
+def run_arc5gl_process_user(cline, user='isobe'):
+    """
+    run arc5gl process with a user option
+    input:  cline   --- command lines
+            user    --- user option
+    output: f_list  --- a list of fits (either extracted or browsed)
+            *fits   --- if the command asked to extract; resulted fits files
+    """
+    with open(zspace, 'w') as fo:
+        fo.write(cline)
+    
+    try:
+        cmd = ' /proj/sot/ska/bin/arc5gl -user ' + user + ' -script ' + zspace + ' > ./zout'
+        os.system(cmd)
+    except:
+        try:
+            cmd  = ' /proj/axaf/simul/bin/arc5gl -user ' + user + ' -script ' + zspace + ' > ./zout'
+            os.system(cmd)
+        except:
+            cmd1 = "/usr/bin/env PERL5LIB= "
+            cmd2 = ' /proj/axaf/simul/bin/arc5gl -user ' + user + ' -script ' + zspace + ' > ./zout'
             cmd  = cmd1 + cmd2
             bash(cmd,  env=ascdsenv)
     

@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta4/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #################################################################################################
 #                                                                                               #
@@ -24,7 +24,7 @@ ascdsenv = getenv('source /home/ascds/.ascrc -r release', shell='tcsh')
 #
 #--- add mta common function
 #
-mta_dir = '/data/mta4/Script/Python3.8/MTA/'
+mta_dir = '/data/mta4/Script/Python3.10/MTA/'
 sys.path.append(mta_dir)
 import mta_common_functions as mcf
 #

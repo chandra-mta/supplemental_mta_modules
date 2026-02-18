@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta4/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #############################################################################################
 #                                                                                           #
@@ -20,7 +20,7 @@ import math
 import numpy
 import astropy.io.fits  as pyfits
 
-sys.path.append('/data/mta4/Script/Python3.8/MTA')
+sys.path.append('/data/mta4/Script/Python3.10/MTA')
 #
 import mta_common_functions    as mcf        #---- contains other functions commonly used in MTA scripts
 
