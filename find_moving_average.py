@@ -480,7 +480,7 @@ def model(p, x):
             x   --- independent value (array --- numpyed)
     """
     plen = len(p)
-    yest = [arg[0] for i in range(0, len(x))]
+    yest = [p[0] for i in range(0, len(x))]
     for i in range(1, plen):
         yest += p[i] * x**i
 
