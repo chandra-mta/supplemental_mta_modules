@@ -1,22 +1,11 @@
-#!/proj/sot/ska3/flight/bin/python
-
-#########################################################################################
-#                                                                                       #
-#   find_moving_average_bk.py: find moving average and envelops on the given data set   #
-#                              this version fit moving average from the end             #
-#                                                                                       #
-#           author: t. isobe (tisobe@cfa.harvard.edu)                                   #
-#                                                                                       #
-#           Last update: Mar 15, 2021                                                   #
-#                                                                                       #
-#########################################################################################
-
-import os
+"""
+**find_moving_average_bk.py**: find moving average and envelops on the given data set. this version fit moving average from the end
+:Author: t. isobe (tisobe@cfa.harvard.edu)
+:Maintainer: w. aaron (william.aaron@cfa.harvard.edu)
+:Last Updated: Feb 18, 2026
+"""
 import sys
 import re
-import string
-import random
-import operator
 import math
 import numpy
 import numpy.polynomial.polynomial as poly
@@ -237,24 +226,24 @@ def readData(file):
 #
 #--- if it is commented out, skip the line
 #
-        m = re.search('#', ent)
+        m = re.search(r'#', ent)
         if m is not None:
             continue
 #
 #--- check which divider the data is using
 #
-        m1 = re.search(':', ent)
-        m2 = re.search(',', ent)
-        m3 = re.search(';', ent)
+        m1 = re.search(r':', ent)
+        m2 = re.search(r',', ent)
+        m3 = re.search(r';', ent)
         if m1 is not None:
-            atemp = re.split(':', ent)
+            atemp = re.split(r':', ent)
         elif m2 is not None:
-            atemp = re.split(',', ent)
+            atemp = re.split(r',', ent)
         elif m3 is not None:
-            atemp = re.split(';', ent)
+            atemp = re.split(r';', ent)
         else:
             try:
-                atemp = re.split('\s+|\t+', ent)
+                atemp = re.split(r'\s+|\t+', ent)
             except:
                 continue
 
