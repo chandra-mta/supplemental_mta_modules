@@ -1,5 +1,3 @@
-#!/proj/sot/ska3/flight/bin/python
-
 #############################################################################
 #                                                                           #
 #       mta_common_functions.py: colleciton of funtions used by mta         #
@@ -11,17 +9,11 @@
 #############################################################################
 
 import os
-import sys
 import re
-import string
 import random
 import time
-import math
 import numpy
-#import astropy.io.fits  as pyfits
-from datetime import datetime
-import Chandra.Time
-from io import BytesIO
+from cxotime import CxoTime
 import codecs
 import unittest
 #
@@ -32,8 +24,6 @@ ascdsenv = getenv('source /home/ascds/.ascrc -r release; source /home/mta/bin/re
 
 tail = int(time.time() * random.random())
 zspace = '/tmp/zspace' + str(tail)
-
-house_keeping = '/data/mta/Script/Python3.11/MTA/'
 
 #--------------------------------------------------------------------------
 #-- read_data_file: read a data file and create a data list              --
@@ -77,7 +67,7 @@ def rm_files(ifile):
     input:  ifile   --- a file name or a list of file names to be removed
     output: none
     """
-    mc = re.search('\*', ifile)
+    mc = re.search(r'\*', ifile)
     if mc  is not None:
         cmd = 'rm -fr ' +  ifile
         os.system(cmd)
@@ -204,11 +194,11 @@ def convert_date_format(date, ifmt="%Y:%j:%H:%M:%S", ofmt="%Y-%m-%dT%H:%M:%S"):
 #--- if it is chandra time, convert the date into '%Y:%j:%H:%M:%S'
 #
     if is_neumeric(date) and (ifmt in ['%Y:%j:%H:%M:%S', 'chandra']):
-        date    = Chandra.Time.DateTime(date).date
+        date    = CxoTime(date).date
 #
 #--- chandra time give a dicimal part in the second; get rid of it
 #
-        atmp    = re.split('\.', date)
+        atmp = date.split('.')
         date    = atmp[0]
         ifmt = '%Y:%j:%H:%M:%S'
 #
@@ -226,7 +216,7 @@ def convert_date_format(date, ifmt="%Y:%j:%H:%M:%S", ofmt="%Y-%m-%dT%H:%M:%S"):
 
     date = time.strftime(ofmt, out)
     if ochk == 1:
-        date = Chandra.Time.DateTime(date).secs
+        date = CxoTime(date).secs
 
     return date
 
@@ -306,7 +296,7 @@ def chandratime_to_fraq_year(ctime):
     output: ytime   --- time in fractional year format
     """
     atime = convert_date_format(ctime, ofmt='%Y:%j:%H:%M:%S')
-    btemp = re.split(':', atime)
+    btemp = atime.split(':')
     year  = float(btemp[0])
     ydate = float(btemp[1])
     hour  = float(btemp[2])
@@ -336,7 +326,7 @@ def chandratime_to_yday(ctime):
     """
 
     atime = convert_date_format(ctime, ofmt='%Y:%j:%H:%M:%S')
-    btemp = re.split(':', atime)
+    btemp = atime.split(':')
     year  = float(btemp[0])
     ydate = float(btemp[1])
     hour  = float(btemp[2])
@@ -406,7 +396,7 @@ def add_tailing_zero(val, digit):
     output: val --- adjust value (str)
     """
     val   = str(val)
-    atemp = re.split('\.', val)
+    atemp = val.split('.')
     
     vlen  = len(atemp[1])
     diff  = digit - vlen
@@ -442,9 +432,9 @@ def check_file_with_name(tdir, part=''):
                 return False
 
         try:
-            part = part.rstrip('\/')
-            part = part.rstrip('*')
-            part = part.rstrip('\\')
+            part = part.rstrip(r'\/')
+            part = part.rstrip(r'*')
+            part = part.rstrip(r'\\')
             if os.path.isdir(tdir):
                 cmd = 'ls ' + tdir + '> ' + zspace
                 os.system(cmd)
@@ -562,7 +552,7 @@ def today_date_display():
     output:<mmm>-<dd>-<yyyy>
     """
     out= time.strftime('%Y:%m:%d', time.gmtime())
-    atemp  = re.split(':', out)
+    atemp = out.split(':')
     lmon   = change_month_format(atemp[1])
 
     current = lmon + '-' + atemp[2] + '-' + atemp[0]
@@ -581,7 +571,7 @@ def today_date_display2():
     output:<mmm>-<dd>-<yyyy>
     """
     out= time.strftime('%Y:%m:%d', time.gmtime())
-    atemp  = re.split(':', out)
+    atemp = out.split(':')
     lmon   = change_month_format(atemp[1])
 
     current = lmon + ' ' + atemp[2] + ', ' + atemp[0]
@@ -599,7 +589,7 @@ def today_date():
     output: [year, mon, day]
     """
     out = time.strftime('%Y:%m:%d', time.gmtime())
-    atemp = re.split(':', out)
+    atemp = out.split(':')
     year  = int(atemp[0])
     mon   = int(atemp[1])
     day   = int(atemp[2])
@@ -610,11 +600,11 @@ def today_date():
 #-- separate_data_to_arrays: separate a table data into arrays of data    --
 #--------------------------------------------------------------------------
 
-def separate_data_to_arrays(data, separator='\s+', com_out=''):
+def separate_data_to_arrays(data, separator=r'\s+', com_out=''):
     """
     separate a table data into arrays of data
     input:  data        --- a data table
-            separator   --- what is the delimited charactor.default: '\s+'
+            separator   --- what is the delimited charactor.default: whitespace
             com_out     --- if this is provided, the beginning of the line 
                             marked with that won't be read in (e.g.  by '#')
     output: coldata     --- a list of lists of each column
@@ -685,7 +675,7 @@ def run_arc5gl_process(cline):
         if mc is not None:
             continue
     
-        atemp = re.split('\s+', ent)
+        atemp = re.split(r'\s+', ent)
         save.append(atemp[0])
     
     return save
@@ -694,7 +684,7 @@ def run_arc5gl_process(cline):
 #-- run_arc5gl_process_user: un arc5gl process with a user option        --
 #--------------------------------------------------------------------------
 
-def run_arc5gl_process_user(cline, user='isobe'):
+def run_arc5gl_process_user(cline, user='swolk'):
     """
     run arc5gl process with a user option
     input:  cline   --- command lines
@@ -735,7 +725,7 @@ def run_arc5gl_process_user(cline, user='isobe'):
         if mc is not None:
             continue
     
-        atemp = re.split('\s+', ent)
+        atemp = ent.split()
         save.append(atemp[0])
     
     return save
@@ -744,11 +734,11 @@ def run_arc5gl_process_user(cline, user='isobe'):
 #-- separate_data_into_col_data: separate a list of data lines into a list of lists 
 #--------------------------------------------------------------------------
 
-def separate_data_into_col_data(data, spliter = '\s+'):
+def separate_data_into_col_data(data, spliter = r'\s+'):
     """
     separate a list of data lines into a list of lists of column data
     input:  data    --- data list
-            spliter --- spliter of the line. default: \s+
+            spliter --- spliter of the line. default: whitespace
     output: save    --- a list of lists of data
     """
     atemp = re.split(spliter, data[0])
@@ -965,7 +955,7 @@ class TestFunctions(unittest.TestCase):
 
         data = ['1  2   3   4', '5  6   7   8']
 
-        out = separate_data_into_col_data(data, spliter='\s+')
+        out = separate_data_into_col_data(data, spliter=r'\s+')
 
         print("I AM HERE: " + str(out))
 
