@@ -1,28 +1,16 @@
-#!/proj/sot/ska3/flight/bin/python
+"""
+**find_moving_average.py**: find moving average and envelops on the given data set
 
-#########################################################################################
-#                                                                                       #
-#   find_moving_average.py: find moving average and envelops on the given data set      #
-#                                                                                       #
-#           author: t. isobe (tisobe@cfa.harvard.edu)                                   #
-#                                                                                       #
-#           Last update: Mar 15, 2021                                                   #
-#                                                                                       #
-#########################################################################################
+:Author: t. isobe (tisobe@cfa.harvard.edu)
+:Maintainer: w. aaron (william.aaron@cfa.harvard.edu)
+:Last Updated: Feb 18, 2026
+"""
 
-import os
 import sys
 import re
-import string
-import random
-import operator
 import math
 import numpy
 import numpy.polynomial.polynomial as poly
-
-#---------------------------------------------------------------------------------------
-#-- run_moving_average: moving average calling function. Read data and run the function-
-#---------------------------------------------------------------------------------------
 
 def run_moving_average():
 
@@ -226,7 +214,7 @@ def readData(file):
      Input: file
      Output: (<x array>, <y array>)
      Note: the file contins two column data which separated 
-           by either space (\t+, \s+), ",", ":", or ";".
+           by either whitespace, ",", ":", or ";".
      The values are converted into float.
     """
     with open(file, 'r') as f:
@@ -239,24 +227,24 @@ def readData(file):
 #
 #--- if it is commented out, skip the line
 #
-        m = re.search('#', ent)
+        m = re.search(r'#', ent)
         if m is not None:
             continue
 #
 #--- check which divider the data is using
 #
-        m1 = re.search(':', ent)
-        m2 = re.search(',', ent)
-        m3 = re.search(';', ent)
+        m1 = re.search(r':', ent)
+        m2 = re.search(r',', ent)
+        m3 = re.search(r';', ent)
         if m1 is not None:
-            atemp = re.split(':', ent)
+            atemp = re.split(r':', ent)
         elif m2 is not None:
-            atemp = re.split(',', ent)
+            atemp = re.split(r',', ent)
         elif m3 is not None:
-            atemp = re.split(';', ent)
+            atemp = re.split(r';', ent)
         else:
             try:
-                atemp = re.split('\s+|\t+', ent)
+                atemp = re.split(r'\s+|\t+', ent)
             except:
                 continue
 
