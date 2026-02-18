@@ -1,4 +1,4 @@
-#!/usr/bin/env /data/mta4/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #################################################################################
 #                                                                               #
@@ -32,7 +32,7 @@ import matplotlib.lines as lines
 #
 #--- reading directory list
 #
-path = '/data/mta/Script/Python3.8/MTA/house_keeping/dir_list'
+path = '/data/mta/Script/Python3.10/MTA/house_keeping/dir_list'
 
 with open(path, 'r') as f:
     data = [line.strip() for line in f.readlines()]
