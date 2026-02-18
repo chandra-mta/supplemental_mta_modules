@@ -1,27 +1,13 @@
-#!/proj/sot/ska3/flight/bin/python
-
-#############################################################################################
-#                                                                                           #
-#       fits_operation.py: collection of fits file related funcitons                        #
-#                                                                                           #
-#           author: t. isobe (tisobe@cfa.harvard.edu)                                       #
-#                                                                                           #
-#           last update: Mar 15, 2021                                                       #
-#                                                                                           #
-#############################################################################################
-
+"""
+**fits_operation.py**: collection of fits file related funcitons
+:Author: t. isobe (tisobe@cfa.harvard.edu)
+:Maintainer: w. aaron (william.aaron@cfa.harvard.edu)
+:Last Updated: feb 29, 2024
+"""
 import os
-import sys
 import re
-import string
-import random
-import operator
-import math
 import numpy
 import astropy.io.fits  as pyfits
-
-sys.path.append('/data/mta4/Script/Python3.11/MTA')
-#
 
 #-------------------------------------------------------------------------------------------------------
 #-- findKeyWords: for a given fits file name, return a list of keyword lists and their values         --
