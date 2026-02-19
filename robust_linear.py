@@ -1,16 +1,10 @@
-#!/proj/sot/ska3/flight/bin/python
+"""
+**robust_linear.py** compute a linear fit using robust method. Numerical Recipes (FORTRAN version) p.544
 
-#############################################################################################
-#                                                                                           #
-#   robust_linear.py:   compute a linear fit using robust method                            #
-#                       Numerical Recipes (FORTRAN version) p.544                           #
-#                                                                                           #
-#           author: t. isobe (tisobe@cfa.harvard.edu)                                       #
-#                                                                                           #
-#           Last update:     Feb 29, 2024                                                   #
-#                                                                                           #
-#############################################################################################
-
+:Author: t. isobe (tisobe@cfa.harvard.edu)
+:Maintainer: w. aaron (william.aaron@cfa.harvard.edu)
+:Last Updated: Feb 29, 2024
+"""
 import random
 import math
 
