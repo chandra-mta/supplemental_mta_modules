@@ -680,56 +680,6 @@ def run_arc5gl_process(cline):
     return file_list
 
 #--------------------------------------------------------------------------
-#-- run_arc5gl_process_user: un arc5gl process with a user option        --
-#--------------------------------------------------------------------------
-
-def run_arc5gl_process_user(cline, user='swolk'):
-    """
-    run arc5gl process with a user option
-    input:  cline   --- command lines
-            user    --- user option
-    output: f_list  --- a list of fits (either extracted or browsed)
-            *fits   --- if the command asked to extract; resulted fits files
-    """
-    with open(zspace, 'w') as fo:
-        fo.write(cline)
-    
-    try:
-        cmd = ' /proj/sot/ska/bin/arc5gl -user ' + user + ' -script ' + zspace + ' > ./zout'
-        os.system(cmd)
-    except:
-        try:
-            cmd  = ' /proj/axaf/simul/bin/arc5gl -user ' + user + ' -script ' + zspace + ' > ./zout'
-            os.system(cmd)
-        except:
-            cmd1 = "/usr/bin/env PERL5LIB= "
-            cmd2 = ' /proj/axaf/simul/bin/arc5gl -user ' + user + ' -script ' + zspace + ' > ./zout'
-            cmd  = cmd1 + cmd2
-            bash(cmd,  env=ascdsenv)
-    
-    rm_files(zspace)
-    
-    out  = read_data_file('./zout', remove=1)
-    save = []
-    for ent in out:
-        if ent == "":
-            continue
-        mc = re.search('Filename', ent)
-        if mc is not None:
-            continue
-        mc = re.search('Retrieved', ent)
-        if mc is not None:
-            continue
-        mc = re.search('---------------', ent)
-        if mc is not None:
-            continue
-    
-        atemp = ent.split()
-        save.append(atemp[0])
-    
-    return save
-
-#--------------------------------------------------------------------------
 #-- separate_data_into_col_data: separate a list of data lines into a list of lists 
 #--------------------------------------------------------------------------
 
