@@ -16,9 +16,13 @@ import numpy
 from cxotime import CxoTime
 import codecs
 import unittest
+from contextlib import redirect_stdout
+import io
+import warnings
 #
 #--- from ska
 #
+import ska_arc5gl
 from Ska.Shell import getenv, bash
 ascdsenv = getenv('source /home/ascds/.ascrc -r release; source /home/mta/bin/reset_param ', shell='tcsh')
 
@@ -631,54 +635,49 @@ def separate_data_to_arrays(data, separator=r'\s+', com_out=''):
 
     return coldata
 
-#--------------------------------------------------------------------------
-#-- run_arc5gl_process: un arc5gl process                                --
-#--------------------------------------------------------------------------
+def _call_arc5gl(cline):
+    """
+    Call the arc5gl perl executable using the Ska3 wrapper
+    """
+    with warnings.catch_warnings():
+        #: Ignore ResourceWarnings for unclosed parsing of the arc5gl credential files
+        warnings.simplefilter('ignore', category=ResourceWarning)
+        arc5gl = ska_arc5gl.Arc5gl(echo = True)
+        lines = cline.split('\n')
+        for line in lines:
+            arc5gl.sendline(line)
+    del arc5gl
+
+def _parse_file_list(captured_output):
+    """
+    Format the captured arc5gl output into a file list
+    """
+    file_list = []
+    for line in [_.strip() for _ in captured_output.split('\n')]:
+        if (line == '' or 
+            line.startswith('ARC5GL>') or
+            line.startswith('Closed') or 
+            line.startswith('Filename') or 
+            line.startswith('Retrieved') or
+            line.startswith('---------------')):
+            continue
+        else:
+            file_list.append(line.split()[0])
+    return file_list
 
 def run_arc5gl_process(cline):
     """
-    run arc5gl process
-    input:  cline   --- command lines
-    output: f_list  --- a list of fits (either extracted or browsed)
-    *fits   --- if the command asked to extract; resulted fits files
+    Run the arc5gl process and return the extracted or browsed files
     """
-    with open(zspace, 'w') as fo:
-        fo.write(cline)
+    f = io.StringIO() #: File Handler for stdout
+    with redirect_stdout(f):
+        _call_arc5gl(cline)
     
-    try:
-        cmd = ' /proj/sot/ska/bin/arc5gl -user swolk -script ' + zspace + ' > ./zout'
-        os.system(cmd)
-    except:
-        try:
-            cmd  = ' /proj/axaf/simul/bin/arc5gl -user swolk -script ' + zspace + ' > ./zout'
-            os.system(cmd)
-        except:
-            cmd1 = "/usr/bin/env PERL5LIB= "
-            cmd2 = ' /proj/axaf/simul/bin/arc5gl -user swolk -script ' + zspace + ' > ./zout'
-            cmd  = cmd1 + cmd2
-            bash(cmd,  env=ascdsenv)
+    captured_output = f.getvalue()
+    f.close()
+    file_list = _parse_file_list(captured_output)
     
-    rm_files(zspace)
-    
-    out  = read_data_file('./zout', remove=1)
-    save = []
-    for ent in out:
-        if ent == "":
-            continue
-        mc = re.search('Filename', ent)
-        if mc is not None:
-            continue
-        mc = re.search('Retrieved', ent)
-        if mc is not None:
-            continue
-        mc = re.search('---------------', ent)
-        if mc is not None:
-            continue
-    
-        atemp = re.split(r'\s+', ent)
-        save.append(atemp[0])
-    
-    return save
+    return file_list
 
 #--------------------------------------------------------------------------
 #-- run_arc5gl_process_user: un arc5gl process with a user option        --
