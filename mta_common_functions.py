@@ -1,12 +1,11 @@
-#############################################################################
-#                                                                           #
-#       mta_common_functions.py: colleciton of funtions used by mta         #
-#                                                                           #
-#           author: t. isobe (tisobe@cfa.harvard.edu)                       #
-#                                                                           #
-#           last update: Oct 21, 2021                                       #
-#                                                                           #
-#############################################################################
+"""
+**mta_common_functions.py** colleciton of functions used by mta
+
+:Author: t. isobe (tisobe@cfa.harvard.edu)
+:Maintainer: w. aaron (william.aaron@cfa.harvard.edu)
+:Last Updated: Feb 20, 2026
+
+"""
 
 import os
 import re
@@ -23,8 +22,6 @@ import warnings
 #--- from ska
 #
 import ska_arc5gl
-from Ska.Shell import getenv, bash
-ascdsenv = getenv('source /home/ascds/.ascrc -r release; source /home/mta/bin/reset_param ', shell='tcsh')
 
 tail = int(time.time() * random.random())
 zspace = '/tmp/zspace' + str(tail)
