@@ -197,7 +197,7 @@ def selectTableData(ifile, colname, condition, outname, extension = 1, clobber='
     tdata = t[extension].data
     
     mc    = re.search(':',  condition)
-    mc1   = re.search('\!', condition)
+    mc1   = re.search(r'\!', condition)
     chk   = 0
     if mc is not None:
         atemp = re.split(':', condition)
